@@ -1,0 +1,21 @@
+#----------------------------------------- Enable MFA --------------------------------
+Connect-MsolService
+
+$mf= New-Object -TypeName Microsoft.Online.Administration.StrongAuthenticationRequirement
+
+$mf.RelyingParty = "*"
+$mfa = @($mf)
+
+# Get all users and set the StrongAuthenticationRequirements to Enable MFA
+Get-MsolUser -All | Set-MsolUser -StrongAuthenticationRequirements $mfa
+
+#----------------------------------------- Enforce MFA --------------------------------
+Connect-MsolService
+
+$mf = New-Object -TypeName Microsoft.Online.Administration.StrongAuthenticationRequirement
+$mf.RelyingParty = "*"
+$mf.State = "Enforced"  # Set the MFA state to "Enforced"
+$mfa = @($mf)
+
+# Get all users and set the StrongAuthenticationRequirements to Enforce MFA
+Get-MsolUser -All | Set-MsolUser -StrongAuthenticationRequirements $mfa
