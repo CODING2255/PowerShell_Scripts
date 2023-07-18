@@ -1,0 +1,21 @@
+Connect-AzureAD
+Connect-MsolService
+
+Get-AzureADUser # to confirm if the user is logged in to the right account.
+
+$PR = Import-csv "C:\Revokemfabulk .csv"
+
+#revoke session
+ForEach ($userS in $PR) {
+Revoke-AzureADUserAllRefreshToken -ObjectId ($userS.UserName)
+$userS.UserName
+ }
+
+# after 2min run 
+
+#reset MFA
+ForEach ($userM in $PR) {
+Reset-MsolStrongAuthenticationMethodByUpn  -UserPrincipalName ($userM.UserName)
+$userM.UserName
+}
+
