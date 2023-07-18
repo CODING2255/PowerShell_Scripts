@@ -1,0 +1,12 @@
+Connect-ExchangeOnline
+
+$Mid = " mail id of the user whos archive should be enabled "
+
+#Get the mailbox status
+Get-Mailbox -Identity "$Mid" | Select ArchiveStatus, ArchiveDatabase
+
+Start-ManagedFolderAssistant –Identity "$Mid"
+
+Enable-Mailbox "$Mid" -AutoExpandingArchive
+
+Enable-Mailbox –Identity "$Mid" -Archive
