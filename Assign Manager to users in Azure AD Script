@@ -1,0 +1,35 @@
+# Import the AzureAD module
+Import-Module AzureAD
+
+# Connect to Azure AD
+Connect-AzureAD
+
+# Path to the CSV file
+$csvPath = "C:\Manger.csv" 
+
+# Read the CSV file
+$csvData = Import-Csv -Path $csvPath
+
+# Loop through each row in the CSV
+foreach ($row in $csvData) {
+    $userEmail = $row.EmployeeMailID
+    $managerEmail = $row.ManagerMailID
+
+    # Get the user object by email ID
+    $user = Get-AzureADUser -ObjectId "$userEmail"
+    $manager = Get-AzureADUser -ObjectId "$managerEmail"
+
+    # Check if the user and manager are found
+    if ($user -and $manager) {
+        $userId = $user.ObjectId
+        $managerId = $manager.ObjectId
+
+        # Set the manager for the user
+        Set-AzureADUserManager -ObjectId $userId -RefObjectId $managerId
+
+        Write-Host "`nManager'$managerEmail' set for user $userEmail'`n"
+    }
+    else {
+        Write-Host "`nUser or manager not found for user with email '$userEmail' and manager with email '$managerEmail'`n"
+    }
+}
