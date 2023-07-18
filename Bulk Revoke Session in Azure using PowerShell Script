@@ -1,0 +1,12 @@
+az login
+
+Connect-AzureAD -TenantId "<tenantId>"
+
+Get-AzureADUser
+#Csv file Path
+$csvauth ="C:\bulkrevok.csv"
+$MFAauth = Import-csv $csvauth
+$MFAAuth.ObjectId
+ForEach ($ob in $MFAAuth) {
+ Revoke-AzureADUserAllRefreshToken -ObjectId $ob.ObjectId
+}
