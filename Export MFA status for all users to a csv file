@@ -1,12 +1,11 @@
 # Install and import the MSOnline module
-
 Install-Module -Name MSOnline -Force
 Import-Module -Name MSOnline
 
 # Connect to Azure Active Directory
-Connect-MsolService
+Connect-MsolService 
 
-# Retrieve all user accounts
+#Get all users
 $users = Get-MsolUser -All
 
 # Create an empty array to store user data
@@ -14,23 +13,23 @@ $userData = @()
 
 # Iterate through each user
 foreach ($user in $users) {
+
     $username = $user.UserPrincipalName
+    $MFAStatus = $user.StrongAuthenticationRequirements.State
     $isMFAEnabled = $user.StrongAuthenticationRequirements.Count -gt 0
-
     # Determine the status text based on the MFA status
-    $status = if ($isMFAEnabled) { "Enabled" } else { "Disabled" }
-
+    $status = if ($MFAStatus -eq "Enforced") { "Enforced" } elseif($isMFAEnabled -eq "Enabled" ) { "Enabled" }  else { "Disabled" }
     # Create a custom object with user data
     $userObject = [PSCustomObject]@{
         User = $username
         "MFA Status" = $status
     }
-
     # Add the user object to the array
     $userData += $userObject
 }
 
 # Export user data to a CSV file
-$userData | Export-Csv -Path "C:\MFA_Status.csv" -NoTypeInformation #you also can give custom path
+$userData | Export-Csv -Path "MFA_Status.csv" -NoTypeInformation
 
 Disconnect-MsolService
+
